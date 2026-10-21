@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manger • One-time migration</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#F9F6F0;color:#1A1A1A;padding:20px}
+.box{max-width:560px;margin:4vh auto;background:#F3EBE1;border-top:6px solid #A67B5B;border-radius:16px;padding:28px}
+h1{font-family:Georgia,serif;color:#4A2C2A;margin-bottom:6px}
+p{color:#5C4A3A;margin-bottom:14px;line-height:1.5}
+label{display:block;font-weight:600;color:#4A2C2A;margin:12px 0 5px}
+input{width:100%;padding:12px 15px;border:2px solid #D4C5B2;border-radius:10px;font-size:1rem;font-family:inherit}
+button{margin-top:18px;width:100%;padding:12px;border:none;border-radius:30px;background:#2E7D32;color:#fff;font-weight:700;font-size:1rem;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+#log{margin-top:18px;background:#fff;border:1px solid #D4C5B2;border-radius:10px;padding:12px;font-family:Consolas,monospace;font-size:.85rem;white-space:pre-wrap;max-height:280px;overflow-y:auto;min-height:60px}
+.warn{background:#fff4e5;border-left:4px solid #A67B5B;padding:10px 14px;border-radius:8px;margin-bottom:14px;color:#5C4A3A;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>⚜️ Manger migration</h1>
+  <p>Copies every song and event from the old Charged For Christ project into your new Manger group. The old data is not changed or deleted.</p>
+  <div class="warn">First create your Charged For Christ group in the Manger app, then enter that group's username and password here. Running this twice is safe: it overwrites the same items instead of duplicating them.</div>
+  <label for="u">New group username</label><input id="u" autocapitalize="none" />
+  <label for="p">New group password</label><input id="p" type="password" />
+  <button id="go">Copy my songs and events</button>
+  <div id="log">Ready.</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script>
+const OLD_CONFIG = {
+  apiKey: "AIzaSyBPeMuVsZmu_KwAXMRhIsF7T_4pWtIz7G8",
+  authDomain: "chargedforchrist-7ffdd.firebaseapp.com",
+  projectId: "chargedforchrist-7ffdd",
+  storageBucket: "chargedforchrist-7ffdd.firebasestorage.app",
+  messagingSenderId: "646339933305",
+  appId: "1:646339933305:web:d07f9c8e8d8c9d77a150a8"
+};
+const NEW_CONFIG = {
+  apiKey: "AIzaSyDN78Yu1Hbb0AgvFE2x2xovb0tNtwbKB7g",
+  authDomain: "manger-65933.firebaseapp.com",
+  projectId: "manger-65933",
+  storageBucket: "manger-65933.firebasestorage.app",
+  messagingSenderId: "895435513722",
+  appId: "1:895435513722:web:af2a78a7c5a50ca2a3c0c3"
+};
+const EMAIL_DOMAIN = '@songmanager.app';
+
+const oldApp = firebase.initializeApp(OLD_CONFIG, 'old');
+const newApp = firebase.initializeApp(NEW_CONFIG, 'new');
+const oldDb = oldApp.firestore(), newDb = newApp.firestore(), newAuth = newApp.auth();
+const log = t => { const l = document.getElementById('log'); l.textContent += '\n' + t; l.scrollTop = l.scrollHeight; };
+
+document.getElementById('go').onclick = async () => {
+  const user = document.getElementById('u').value.trim().toLowerCase(), pass = document.getElementById('p').value;
+  const btn = document.getElementById('go');
+  if (!user || !pass) return log('Enter the group username and password.');
+  btn.disabled = true; document.getElementById('log').textContent = 'Starting...';
+  try {
+    log('Signing in to the new group...');
+    const cred = await newAuth.signInWithEmailAndPassword(user + EMAIL_DOMAIN, pass);
+    const dest = newDb.collection('groups').doc(cred.user.uid);
+    log('Signed in. ✅');
+
+    log('Reading old songs...');
+    const songs = await oldDb.collection('songs').get();
+    log('Found ' + songs.size + ' songs.');
+    log('Reading old events...');
+    const events = await oldDb.collection('events').get();
+    log('Found ' + events.size + ' events.');
+    if (!songs.size && !events.size) { log('Nothing to copy.'); btn.disabled = false; return; }
+
+    let n = 0;
+    for (const d of songs.docs) {
+      const data = d.data();
+      if (!data.created) data.created = firebase.firestore.FieldValue.serverTimestamp();
+      await dest.collection('songs').doc(d.id).set(data);
+      log('  song ' + (++n) + '/' + songs.size + ': ' + (data.title || d.id));
+    }
+    n = 0;
+    for (const d of events.docs) {
+      const data = d.data();
+      if (!data.created) data.created = firebase.firestore.FieldValue.serverTimestamp();
+      await dest.collection('events').doc(d.id).set(data);
+      log('  event ' + (++n) + '/' + events.size + ': ' + (data.name || data.venue || d.id));
+    }
+    log('\n✅ Done! Open Manger and check your Songs and Events. You can delete this file afterwards.');
+  } catch (e) {
+    log('\n⚠️ ' + (e.code || '') + ' ' + e.message);
+    if (/permission/i.test(e.message)) log('If this happened while reading, your OLD project\'s rules are blocking reads. Temporarily allow reads there (see instructions), then run again.');
+    if (/invalid-credential|wrong-password|user-not-found/.test(e.code || '')) log('Check the group username and password, and that the group exists in the new app.');
+  }
+  btn.disabled = false;
+};
+</script>
+</body>
+</html>
