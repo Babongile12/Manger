@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manger</title>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="auth">
+  <div class="card">
+    <h1>⚜️ Manger</h1>
+    <p class="mu">Your group's songs, kept.</p><p class="mu" style="font-size:.9rem">Sign in to your group, or create a new one.</p>
+    <div class="tabs">
+      <button class="btn b-dk" id="tabIn">Log in</button>
+      <button class="btn b-pri" id="tabUp">Create group</button>
+    </div>
+    <div class="fg hidden" id="gnWrap"><label for="aName">Group name</label><input id="aName" placeholder="e.g. Charged For Christ" /></div>
+    <div class="fg"><label for="aUser">Group username</label><input id="aUser" autocapitalize="none" autocomplete="username" placeholder="e.g. chargedforchrist" /></div>
+    <div class="fg"><label for="aPass">Password</label><input id="aPass" type="password" autocomplete="current-password" /></div>
+    <div class="fg hidden" id="cpWrap"><label for="aPass2">Confirm password</label><input id="aPass2" type="password" autocomplete="new-password" /></div>
+    <button class="btn b-ok" id="authBtn" style="width:100%">Log in</button>
+    <div class="fb" id="authFb"></div>
+    <p class="mu" style="font-size:.8rem;text-align:center;margin-top:14px"><a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="container hidden" id="app">
+  <div class="header">
+    <div class="hrow">
+      <img id="gIcon" class="avatar hidden" alt="Group icon" data-action="showPage" data-id="settings" />
+      <div><h1><span id="gEmoji">⚜️</span> <span id="gName">Group</span></h1><small>Manger</small></div>
+    </div>
+    <div class="hrow">
+      <button class="bell" id="bellBtn" aria-label="Notifications">🔔<span class="bdg hidden" id="bellBadge">0</span></button>
+      <div class="conn" id="conn">🟢 Live</div>
+    </div>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-page="home" class="active">Home</button>
+    <button data-page="songs">Songs</button>
+    <button data-page="events">Events</button>
+    <button data-page="practice">Practice</button>
+    <button data-page="settings">Settings</button>
+  </nav>
+
+  <div class="page" id="page-home"><div id="homeContent"></div></div>
+
+  <div class="page hidden" id="page-songs">
+    <div class="card leader-only" id="songFormCard">
+      <h2>➕ Add / Edit Song</h2>
+      <div class="row">
+        <div class="fg"><label for="songTitle">Song Title *</label><input id="songTitle" placeholder="e.g. 'Amazing Grace'" /></div>
+        <div class="fg"><label for="songKey">Musical Key</label><input id="songKey" placeholder="e.g. 'Ab'" /></div>
+      </div>
+      <div class="fg"><label for="songLyrics">Lyrics</label><textarea id="songLyrics" placeholder="Paste the full lyrics here..."></textarea></div>
+      <div class="fg"><label for="songTags">Tags (comma separated)</label><input id="songTags" placeholder="e.g. praise, hymn, christmas" /></div>
+      <details id="linksBox" class="fg"><summary style="cursor:pointer;font-weight:600">🔗 Links &amp; part tracks (optional)</summary>
+        <p class="mu" style="font-size:.9rem;margin:8px 0">Paste YouTube, Spotify, Google Drive or Dropbox links. Members tap them to practise their part at home.</p>
+        <div class="fg"><label for="lnkRef">Reference recording / video</label><input id="lnkRef" inputmode="url" placeholder="https://..." /></div>
+        <div class="fg"><label for="lnkSheet">Sheet music</label><input id="lnkSheet" inputmode="url" placeholder="https://..." /></div>
+        <div class="row"><div class="fg"><label for="lnkS">Soprano track</label><input id="lnkS" inputmode="url" placeholder="https://..." /></div><div class="fg"><label for="lnkA">Alto track</label><input id="lnkA" inputmode="url" placeholder="https://..." /></div></div>
+        <div class="row"><div class="fg"><label for="lnkT">Tenor track</label><input id="lnkT" inputmode="url" placeholder="https://..." /></div><div class="fg"><label for="lnkB">Bass track</label><input id="lnkB" inputmode="url" placeholder="https://..." /></div></div>
+      </details>
+      <div class="fg"><label for="songNotes">Practice Notes</label><textarea id="songNotes" placeholder="e.g. 'Bass 2 comes in on beat 3'"></textarea></div>
+      <div class="fg"><label>🎤 Record 5-Second Key</label>
+        <div class="rec">
+          <button id="recordBtn" class="btn b-no sm">🔴 Record</button>
+          <span class="tm" id="timer">0.0s / 5s</span>
+          <button id="playBtn" class="btn b-pri sm" disabled>▶️ Play</button>
+          <button id="clearAudioBtn" class="btn b-no sm" disabled>✕ Clear</button>
+          <span class="st" id="audioStatus">No recording</span>
+        </div>
+      </div>
+      <button id="saveSongBtn" class="btn b-ok">💾 Save Song</button>
+      <button id="cancelSongBtn" class="btn b-dk hidden">Cancel edit</button>
+      <div class="fb" id="songFb"></div>
+    </div>
+    <div class="card">
+      <h2>📚 Song Library <span class="mu" id="songCount" style="font-size:1rem;font-family:'Segoe UI',sans-serif"></span></h2>
+      <div class="fg"><input id="searchInput" placeholder="🔍 Search title, key, lyrics or tag..." /></div>
+      <div class="fg"><select id="songSort" aria-label="Sort songs"><option value="new">Sort: Newest first</option><option value="az">Sort: A to Z</option><option value="last">Sort: Not sung in a while</option><option value="most">Sort: Most sung</option></select></div>
+      <div id="songChips" class="chips"></div>
+      <div id="songList"></div>
+    </div>
+  </div>
+
+  <div class="page hidden" id="page-events">
+    <div class="card leader-only" id="eventFormCard">
+      <h2 id="eventFormTitle">➕ Add Event</h2>
+      <div class="fg"><label for="eName">Event Name</label><input id="eName" placeholder="e.g. 'Sunday Morning Service'" /></div>
+      <div class="row3">
+        <div class="fg"><label for="eDate">Date *</label><input type="date" id="eDate" /></div>
+        <div class="fg"><label for="eTime">Time</label><input type="time" id="eTime" /></div>
+        <div class="fg"><label for="eVenue">Venue *</label><input id="eVenue" placeholder="e.g. 'Grace Chapel'" /></div>
+      </div>
+      <div class="fg"><label for="eDress">Dress Code</label><input id="eDress" placeholder="e.g. 'Black and gold'" /></div>
+      <div class="fg"><label for="eNotes">Notes</label><textarea id="eNotes" class="short" placeholder="e.g. 'Soundcheck at 8:30'"></textarea></div>
+      <div class="fg"><label>🎶 Choose Songs</label><input id="pickerSearch" placeholder="🔍 Search your songs..." /><div class="picker" id="picker"></div></div>
+      <div class="fg"><label>📋 Setlist Order <span class="mu" id="setCount" style="font-weight:400"></span></label><div id="setOrder"></div></div>
+      <button id="saveEventBtn" class="btn b-ok">💾 Save Event</button>
+      <button id="cancelEventBtn" class="btn b-dk hidden">Cancel edit</button>
+      <div class="fb" id="eventFb"></div>
+    </div>
+    <div class="card"><h2>📅 Upcoming Events</h2><div id="upcomingList"></div></div>
+    <div class="card"><h2>🕰️ Past Events</h2><div id="pastList"></div></div>
+  </div>
+
+  <div class="page hidden" id="page-practice">
+    <div class="card leader-only" id="practiceFormCard">
+      <h2 id="practiceFormTitle">➕ Add Practice</h2>
+      <div class="fg"><label for="pName">Practice name (optional)</label><input id="pName" placeholder="e.g. 'Tuesday rehearsal'" /></div>
+      <div class="row3">
+        <div class="fg"><label for="pDate">Date *</label><input type="date" id="pDate" /></div>
+        <div class="fg"><label for="pTime">Time</label><input type="time" id="pTime" /></div>
+        <div class="fg"><label for="pVenue">Venue *</label><input id="pVenue" placeholder="e.g. 'Church hall'" /></div>
+      </div>
+      <div class="fg"><label for="pPre">📝 Pre-practice notes</label><textarea id="pPre" class="short" placeholder="e.g. 'We start with the new song, warm up at 6:45'"></textarea></div>
+      <div class="fg"><label for="pRemind">🔔 Reminders (one per line)</label><textarea id="pRemind" class="short" placeholder="e.g. 'Bring your black folder'"></textarea></div>
+      <div class="fg"><label>✅ Attendance <span class="mu" id="attCount" style="font-weight:400"></span></label>
+        <div class="acts" style="margin-bottom:8px"><button class="btn b-dk sm" id="attAll">Mark everyone present</button><button class="btn b-dk sm" id="attNone">Clear</button></div>
+        <div class="picker" id="attList"></div>
+      </div>
+      <div class="fg"><label for="pPost">📋 Post-practice notes</label><textarea id="pPost" class="short" placeholder="e.g. 'Altos need more work on the bridge'"></textarea></div>
+      <div class="row">
+        <div class="fg"><label for="pNextDate">📆 Next practice date</label><input type="date" id="pNextDate" /></div>
+        <div class="fg"><label for="pNextTime">Next practice time</label><input type="time" id="pNextTime" /></div>
+      </div>
+      <button id="savePracticeBtn" class="btn b-ok">💾 Save Practice</button>
+      <button id="cancelPracticeBtn" class="btn b-dk hidden">Cancel edit</button>
+      <div class="fb" id="practiceFb"></div>
+    </div>
+    <div class="card"><h2>📅 Upcoming Practices</h2><div id="practiceUpcoming"></div></div>
+    <div class="card"><h2>🕰️ Past Practices</h2><div id="practicePast"></div></div>
+  </div>
+
+  <div class="page hidden" id="page-members">
+    <div class="card">
+      <div class="top"><h2 style="margin:0">👥 Group Members</h2><button class="btn b-dk sm" data-action="showPage" data-id="settings">← Back to Settings</button></div>
+    </div>
+    <div class="card leader-only" id="memberFormCard">
+      <h2 id="memberFormTitle">➕ Add Member</h2>
+      <div class="row">
+        <div class="fg"><label for="mbName">Name *</label><input id="mbName" placeholder="e.g. 'Thandi Mokoena'" /></div>
+        <div class="fg"><label for="mbPart">Part they sing</label><select id="mbPart"></select></div>
+      </div>
+      <div class="row">
+        <div class="fg"><label for="mbPhone">Phone</label><input id="mbPhone" type="tel" placeholder="e.g. 082 123 4567" /></div>
+        <div class="fg"><label for="mbEmail">Email</label><input id="mbEmail" type="email" autocapitalize="none" placeholder="optional" /></div>
+      </div>
+      <div class="fg"><label for="mbBirthday">🎂 Birthday (optional, only day and month are used)</label><input id="mbBirthday" type="date" /></div>
+      <div class="fg"><label for="mbNotes">Notes</label><textarea id="mbNotes" class="short" placeholder="e.g. 'Section leader for Altos'"></textarea></div>
+      <button id="mbSave" class="btn b-ok">💾 Save Member</button>
+      <button id="mbCancel" class="btn b-dk hidden">Cancel edit</button>
+      <div class="fb" id="mbFb"></div>
+    </div>
+    <div class="card">
+      <h2>📊 Attendance</h2>
+      <p class="mu" id="attStatsNote" style="margin-bottom:10px"></p>
+      <div id="attStats"></div>
+      <button class="btn b-dk sm mt" id="csvBtn">⬇️ Download members &amp; attendance (CSV)</button>
+    </div>
+    <div class="card">
+      <h2>📋 Members <span class="mu" id="memberCount" style="font-size:1rem;font-family:'Segoe UI',sans-serif"></span></h2>
+      <div id="partSummary" class="mt" style="margin-bottom:12px"></div>
+      <div class="fg"><input id="memberSearch" placeholder="🔍 Search by name or part..." /></div>
+      <div id="memberList"></div>
+    </div>
+  </div>
+
+  <div class="page hidden" id="page-settings">
+    <div class="card leader-only">
+      <h2>✏️ Group Name</h2>
+      <div class="fg"><input id="setName" /></div>
+      <button class="btn b-ok" id="saveNameBtn">Save name</button><div class="fb" id="nameFb"></div>
+    </div>
+    <div class="card leader-only">
+      <h2>🖼️ Group Picture</h2>
+      <div class="hrow" style="margin-bottom:12px">
+        <img id="iconPreview" class="avatar big hidden" alt="Group icon" /><span id="iconEmoji" style="font-size:3rem">⚜️</span>
+        <div class="acts">
+          <label class="btn b-pri sm" for="iconFile">📷 Choose picture</label>
+          <button class="btn b-no sm hidden" id="iconRemove">Remove</button>
+        </div>
+      </div>
+      <input type="file" id="iconFile" accept="image/*" class="hidden" />
+      <p class="mu" style="font-size:.9rem">Shown at the top of the app. Square pictures work best.</p>
+      <div class="fb" id="iconFb"></div>
+    </div>
+    <div class="card leader-only"><h2>🎨 Theme</h2><div class="themes" id="themeList"></div></div>
+    <div class="card">
+      <h2>👥 Group Members</h2>
+      <p class="mu" style="margin-bottom:12px">Names, contact details and the part each person sings. Used for practice attendance.</p>
+      <button class="btn b-pri" data-action="showPage" data-id="members">Open members</button>
+    </div>
+    <div class="card">
+      <h2>🔔 Notifications</h2>
+      <p class="mu" style="margin-bottom:12px">When someone adds or changes an event or practice, everyone logged in to the group is notified.</p>
+      <p id="notifPermStatus" style="margin-bottom:12px;font-weight:600"></p>
+      <button class="btn b-pri" id="notifPermBtn">Turn on alerts on this device</button>
+    </div>
+    <div class="card">
+      <h2>📱 This device</h2>
+      <p class="mu" style="margin-bottom:10px">Tell the app who you are on this phone. It's used for your replies (RSVP), poll votes and showing <em>your</em> part's tracks.</p>
+      <div class="fg"><select id="meSelect" aria-label="Who are you"></select></div>
+    </div>
+    <div class="card">
+      <h2>👑 Leader access</h2>
+      <p class="mu" style="margin-bottom:10px" id="roleStatus"></p>
+      <p class="mu" style="font-size:.85rem;margin-bottom:10px">With a PIN set, members see a read-only app and only leaders can edit. This stops accidents. It is not hacker-proof, because everyone shares one group login.</p>
+      <div id="roleUnlockWrap" class="hidden"><div class="fg"><label for="rolePinIn">Leader PIN</label><input id="rolePinIn" type="password" autocomplete="off" /></div><button class="btn b-pri" id="roleUnlockBtn">Unlock leader mode</button></div>
+      <div id="roleSetWrap"><div class="fg"><label for="rolePinNew">New leader PIN (4+ characters)</label><input id="rolePinNew" type="password" autocomplete="off" /></div><button class="btn b-ok" id="roleSetBtn">Set leader PIN</button></div>
+      <div class="acts mt"><button class="btn b-dk sm hidden" id="roleLockBtn">Switch this device to Member view</button><button class="btn b-no sm hidden" id="roleRemoveBtn">Remove PIN</button></div>
+      <div class="fb" id="roleFb"></div>
+    </div>
+    <div class="card leader-only">
+      <h2>🔗 Invite members</h2>
+      <p class="mu" style="margin-bottom:8px">Sends the app link with your group username filled in. For safety it never includes the password, so give that to people yourself.</p>
+      <p style="word-break:break-all;margin-bottom:10px;font-weight:600" id="inviteLink"></p>
+      <div class="acts"><button class="btn b-ok sm" id="inviteWa">📲 Share on WhatsApp</button><button class="btn b-dk sm" id="inviteCopy">📋 Copy message</button></div>
+      <div class="fb" id="inviteFb"></div>
+    </div>
+    <div class="card leader-only">
+      <h2>💾 Backup</h2>
+      <p class="mu" style="margin-bottom:10px">Download everything (songs, events, practices, members) as a file you can keep safe.</p>
+      <button class="btn b-dk" id="backupBtn">⬇️ Download backup</button>
+    </div>
+    <div class="card leader-only">
+      <h2>🗑️ Recently deleted</h2>
+      <p class="mu" style="margin-bottom:10px">Deleted songs, events, practices and members are kept for 30 days.</p>
+      <div id="trashList"></div>
+    </div>
+    <div class="card">
+      <h2>ℹ️ About</h2>
+      <a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a>
+    </div>
+    <div class="card leader-only">
+      <h2>🔑 Change Password</h2>
+      <div class="fg"><label for="pCur">Current password</label><input type="password" id="pCur" autocomplete="current-password" /></div>
+      <div class="row">
+        <div class="fg"><label for="pNew">New password</label><input type="password" id="pNew" autocomplete="new-password" /></div>
+        <div class="fg"><label for="pNew2">Confirm new password</label><input type="password" id="pNew2" autocomplete="new-password" /></div>
+      </div>
+      <button class="btn b-ok" id="savePassBtn">Update password</button><div class="fb" id="passFb"></div>
+    </div>
+    <div class="card"><h2>🚪 Log Out</h2><button class="btn b-dk" id="logoutBtn">Log out</button></div>
+    <div class="card danger leader-only">
+      <h2>⚠️ Reset Group</h2>
+      <p class="mu" style="margin-bottom:12px">Permanently deletes every song, event, practice and poll in this group and starts afresh. This can NOT be undone, so download a backup first. Your members, group name, theme and password stay. Type the group name to confirm.</p>
+      <div class="fg"><input id="resetConfirm" placeholder="Type the group name" /></div>
+      <button class="btn b-no" id="resetBtn" disabled>Reset group</button><div class="fb" id="resetFb"></div>
+    </div>
+  </div>
+
+  <div class="footer"><span id="footName">Manger</span> • Soli Deo Gloria</div>
+</div>
+
+<!-- SONG MODAL -->
+<div class="overlay" id="songModal"><div class="modal">
+  <div class="mh"><h2 id="mTitle"></h2><button class="x" id="closeModalBtn" aria-label="Close">✕</button></div>
+  <div class="mu" id="mMeta"></div>
+  <div class="mu" id="mUsage" style="margin-top:4px"></div><div id="mTags" style="margin-top:6px"></div>
+  <div class="acts" style="margin:12px 0"><button class="btn b-ok sm hidden" id="mNoteBtn">🔔 Play starting note</button><button class="btn b-dk sm" id="mStage">🎤 Stage mode</button></div>
+  <div class="acts" id="mLinks" style="margin-bottom:12px"></div>
+  <div id="mAudioBox" class="aud hidden"><p style="margin-bottom:8px;font-weight:600">🎵 Recorded Key:</p><audio id="mAudio" controls></audio></div>
+  <div class="lyr" id="mLyrics"></div>
+  <div id="mNotesBox" class="notes hidden"><strong>📝 Notes:</strong><br /><span id="mNotes"></span></div>
+  <div class="acts mt"><button class="btn b-pri leader-only" id="mEdit">✏️ Edit Song</button><button class="btn b-no leader-only" id="mDelete">🗑️ Delete Song</button></div>
+</div></div>
+
+
+<!-- PRACTICE MODAL -->
+<div class="overlay" id="practiceModal"><div class="modal">
+  <div class="mh"><h2 id="prmTitle"></h2><button class="x" id="prmClose" aria-label="Close">✕</button></div>
+  <div class="mu" id="prmMeta"></div>
+  <div id="prmRemBox" class="notes hidden"><strong>🔔 Reminders:</strong><ul id="prmRem" style="margin:6px 0 0 20px"></ul></div>
+  <div id="prmPreBox" class="notes hidden"><strong>📝 Pre-practice notes:</strong><br /><span id="prmPre" style="white-space:pre-wrap"></span></div>
+  <div id="prmPostBox" class="notes hidden"><strong>📋 Post-practice notes:</strong><br /><span id="prmPost" style="white-space:pre-wrap"></span></div>
+  <div id="prmAttBox" class="aud hidden"><strong>✅ Attendance</strong><div id="prmAtt" style="white-space:pre-wrap;margin-top:6px"></div></div>
+  <div id="prmNextBox" class="aud hidden"><strong id="prmNext"></strong></div>
+  <div id="prmRsvpBox" class="hidden"><div id="prmRsvp"></div></div>
+  <div class="acts mt">
+    <button class="btn b-dk" id="prmShare" data-action="shareItem">📲 Share</button>
+    <button class="btn b-dk" id="prmCal" data-action="calItem">📆 Calendar</button>
+    <button class="btn b-pri leader-only" id="prmEdit">✏️ Edit</button>
+    <button class="btn b-ok hidden leader-only" id="prmNextBtn">➕ Schedule next practice</button>
+    <button class="btn b-no leader-only" id="prmDelete">🗑️ Delete</button>
+  </div>
+</div></div>
+
+<!-- NOTIFICATIONS MODAL -->
+<div class="overlay" id="notifModal"><div class="modal">
+  <div class="mh"><h2>🔔 Notifications</h2><button class="x" id="notifClose" aria-label="Close">✕</button></div>
+  <div id="notifList"></div>
+</div></div>
+
+<!-- WHO ARE YOU -->
+<div class="overlay" id="whoModal"><div class="modal">
+  <div class="mh"><h2>🙋 Who are you?</h2><button class="x" id="whoClose" aria-label="Skip">✕</button></div>
+  <p class="mu" style="margin-bottom:12px">Pick your name so the app can record your replies and show your part. This is saved on this phone only.</p>
+  <div id="whoList"></div>
+</div></div>
+
+<!-- ANNOUNCEMENT -->
+<div class="overlay" id="annModal"><div class="modal">
+  <div class="mh"><h2>📢 Announcement</h2><button class="x" id="annClose" aria-label="Close">✕</button></div>
+  <div class="fg"><textarea id="annText" placeholder="e.g. 'Rehearsal moved to Thursday. Bring your folders.'"></textarea></div>
+  <div class="acts"><button class="btn b-ok" id="annSave">Post</button><button class="btn b-no" id="annClear">Remove announcement</button></div>
+  <div class="fb" id="annFb"></div>
+</div></div>
+
+<!-- POLL -->
+<div class="overlay" id="pollModal"><div class="modal">
+  <div class="mh"><h2>📊 New poll</h2><button class="x" id="pollClose" aria-label="Close">✕</button></div>
+  <div class="fg"><label for="pollQ">Question</label><input id="pollQ" placeholder="e.g. 'Which night for the extra rehearsal?'" /></div>
+  <div class="fg"><label for="pollOpts">Options (one per line, 2 to 6)</label><textarea id="pollOpts" placeholder="Wednesday&#10;Thursday&#10;Friday"></textarea></div>
+  <button class="btn b-ok" id="pollSave">Create poll</button>
+  <div class="fb" id="pollFb"></div>
+</div></div>
+
+<!-- STAGE MODE -->
+<div class="stage" id="stage">
+  <div class="stagebar">
+    <button id="stClose" aria-label="Close">✕</button>
+    <div class="stt"><strong id="stTitle"></strong> <span id="stKey"></span> <span id="stPos"></span></div>
+    <div class="stc">
+      <button id="stNote" class="hidden" aria-label="Play starting note">🔔</button>
+      <button id="stSmaller" aria-label="Smaller text">A−</button><button id="stBigger" aria-label="Bigger text">A+</button>
+      <button id="stSlower" aria-label="Slower scroll">🐢</button><button id="stScroll">▶ Auto-scroll</button><button id="stFaster" aria-label="Faster scroll">🐇</button>
+      <button id="stPrev" aria-label="Previous song">◀</button><button id="stNext" aria-label="Next song">▶</button>
+    </div>
+  </div>
+  <div class="stagebody" id="stBody"><div class="stagenotes" id="stNotes"></div><pre id="stLyrics" class="stagelyr"></pre><div style="height:40vh"></div></div>
+</div>
+
+<div id="toasts"></div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
