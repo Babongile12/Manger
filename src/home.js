@@ -38,10 +38,10 @@ function performanceBlock() {
   }
   const list = songsFor(next), id = esc(next.id);
   const setlist = list.length ? list.map((s, i) => `
-    <div class="sl" data-action="viewSong" data-id="${esc(s.id)}"><div class="num">${i + 1}</div>
+    <div class="sl ${s.audioBase64 ? 'hk' : ''}" data-action="viewSong" data-id="${esc(s.id)}"><div class="num">${i + 1}</div>
       <div class="info"><span class="ttl">${esc(s.title)}</span><span class="key">${esc(s.key)}</span></div>
       ${s.audioBase64 ? `<button class="btn b-pri sm" data-action="playAudio" data-id="${esc(s.id)}">▶️ Play Key</button>` : ''}
-      <span style="color:var(--ac);font-weight:600">Lyrics →</span></div>`).join('')
+      <span class="lnk">Lyrics →</span></div>`).join('')
     : `<div class="empty"><span class="ic">🎶</span><p>No songs picked for this event yet.</p><button class="btn b-pri" data-action="editEvent" data-id="${id}">✏️ Add songs</button></div>`;
   return `
     <div class="next"><span class="cd">${countdown(next.date)}</span>

@@ -120,3 +120,18 @@ details>summary{outline:none}
 .stagelyr{white-space:pre-wrap;word-wrap:break-word;font-family:'Segoe UI',system-ui,sans-serif;line-height:1.5;margin:0}
 .stagenotes{opacity:.75;margin-bottom:14px;font-size:1.1rem}
 @media(max-width:600px){.stagebar{gap:5px;padding:8px}.stagebar button{padding:7px 9px;font-size:.85rem;border-radius:8px}.stagebar .stc{gap:4px}.stagebar .stt{min-width:0;font-size:.95rem}.stagebody{padding:14px 16px}}
+
+/* ---------- setlist rows: never let the title run under the buttons ---------- */
+.sl .info{flex:1 1 0;min-width:0;overflow-wrap:anywhere}
+.sl .lnk{color:var(--ac);font-weight:600;white-space:nowrap;flex-shrink:0}
+.sl .btn{flex-shrink:0;white-space:nowrap}
+@media(max-width:600px){
+  .sl{padding:12px;gap:10px}
+  .sl.hk{flex-wrap:wrap;row-gap:8px}
+  .sl.hk .info{flex:1 1 calc(100% - 50px)}       /* title gets the full line next to the number */
+  .sl.hk .btn{margin-left:44px}                    /* Play Key sits underneath, lined up with the title */
+  .sl.hk .lnk{margin-left:auto}                    /* "Lyrics" on the same line, pushed right */
+}
+/* long emails / names must wrap instead of pushing the page sideways */
+.item .mu,.item a,.erow .es,.erow .et,.item .ttl,.ann,.notes,.today{overflow-wrap:anywhere}
+#auth a,#page-settings a{color:var(--hd);font-weight:600}

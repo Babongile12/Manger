@@ -25,11 +25,19 @@
       <button class="btn b-pri" id="tabUp">Create group</button>
     </div>
     <div class="fg hidden" id="gnWrap"><label for="aName">Group name</label><input id="aName" placeholder="e.g. Charged For Christ" /></div>
-    <div class="fg"><label for="aUser">Group username</label><input id="aUser" autocapitalize="none" autocomplete="username" placeholder="e.g. chargedforchrist" /></div>
+    <div class="fg"><label for="aUser">Group username or email</label><input id="aUser" autocapitalize="none" autocomplete="username" placeholder="e.g. chargedforchrist" /></div>
     <div class="fg"><label for="aPass">Password</label><input id="aPass" type="password" autocomplete="current-password" /></div>
     <div class="fg hidden" id="cpWrap"><label for="aPass2">Confirm password</label><input id="aPass2" type="password" autocomplete="new-password" /></div>
+    <div class="fg hidden" id="emWrap"><label for="aEmail">Recovery email (recommended)</label><input id="aEmail" type="email" autocapitalize="none" placeholder="e.g. mychoir@gmail.com" />
+      <small class="mu" style="display:block;margin-top:4px">With an email you can reset a forgotten password. Your group then logs in with that email.</small></div>
     <button class="btn b-ok" id="authBtn" style="width:100%">Log in</button>
     <div class="fb" id="authFb"></div>
+    <p style="text-align:center;margin-top:12px"><a href="#" id="forgotLink">Forgot password?</a></p>
+    <div id="forgotWrap" class="hidden" style="margin-top:12px;padding-top:14px;border-top:1px solid var(--bd)">
+      <div class="fg"><label for="fEmail">Group email address</label><input id="fEmail" type="email" autocapitalize="none" placeholder="the email your group signed up with" /></div>
+      <button class="btn b-pri" id="fSend" style="width:100%">Send reset link</button>
+      <div class="fb" id="fFb"></div>
+    </div>
     <p class="mu" style="font-size:.8rem;text-align:center;margin-top:14px"><a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a></p>
   </div>
 </div>
@@ -251,6 +259,16 @@
       <h2>ℹ️ About</h2>
       <p class="mu" id="appVersion" style="margin-bottom:8px"></p>
       <a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a>
+    </div>
+    <div class="card leader-only">
+      <h2>🔐 Password recovery</h2>
+      <p class="mu" id="recStatus" style="margin-bottom:12px"></p>
+      <div id="recForm">
+        <div class="fg"><label for="recEmail">Group email address</label><input id="recEmail" type="email" autocapitalize="none" placeholder="e.g. mychoir@gmail.com" /></div>
+        <div class="fg"><label for="recPass">Current group password</label><input id="recPass" type="password" autocomplete="current-password" /></div>
+        <button class="btn b-ok" id="recBtn">Send verification email</button>
+      </div>
+      <div class="fb" id="recFb"></div>
     </div>
     <div class="card leader-only">
       <h2>🔑 Change Password</h2>
