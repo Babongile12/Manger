@@ -11,5 +11,4 @@ export const firebaseConfig = {
 
 // The public web address of your app, used in invite messages.
 // Set this once you deploy (e.g. 'https://manger-xxxx.web.app/'). Empty = use the address you are on now.
-   export const APP_URL = 'https://Babongile12.github.io/Manger/';
-
+export const APP_URL = '';
