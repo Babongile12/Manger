@@ -6,9 +6,9 @@
 <title>Manger</title>
 <meta name="theme-color" content="#4A2C2A" />
 <meta name="description" content="Your group's songs, events and setlists, kept." />
-<link rel="manifest" href="./manifest.webmanifest" />
-<link rel="icon" type="image/png" href="./icons/icon-192.png" />
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+<link rel="manifest" href="/manifest.webmanifest" />
+<link rel="icon" type="image/png" href="/icons/icon-192.png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-title" content="Manger" />
@@ -207,6 +207,8 @@
       <h2>📲 Install on this phone</h2>
       <p id="installStatus" class="mu" style="margin-bottom:12px"></p>
       <button class="btn b-pri hidden" id="installBtn">Install Manger</button>
+      <button class="btn b-dk sm" id="installCheckBtn">🔍 Check install status</button>
+      <pre id="installReport" class="hidden" style="white-space:pre-wrap;word-break:break-word;font-size:.85rem;margin-top:12px;background:var(--inp);border:1px solid var(--bd);border-radius:10px;padding:12px"></pre>
     </div>
     <div class="card">
       <h2>🔔 Notifications</h2>
@@ -247,6 +249,7 @@
     </div>
     <div class="card">
       <h2>ℹ️ About</h2>
+      <p class="mu" id="appVersion" style="margin-bottom:8px"></p>
       <a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a>
     </div>
     <div class="card leader-only">
